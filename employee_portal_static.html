@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>員工專區 - 靜態展示</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .announcement-item {
+            border-left: 4px solid #0d6efd;
+            padding-left: 15px;
+        }
+        .announcement-meta {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        .sidebar {
+            background-color: #f8f9fa;
+            min-height: calc(100vh - 56px);
+        }
+        .nav-link.active {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="showPage('login')">
+                <i class="fas fa-building"></i> 員工專區
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text text-white me-3" id="user-info" style="display: none;">
+                    <i class="fas fa-user"></i> <span id="current-user"></span>
+                </span>
+                <button class="btn btn-outline-light btn-sm" id="logout-btn" style="display: none;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 登出
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- 登入頁面 -->
+            <div id="login-page" class="page-section active">
+                <div class="col-12">
+                    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+                        <div class="col-md-4">
+                            <div class="card shadow">
+                                <div class="card-header text-center">
+                                    <h4><i class="fas fa-sign-in-alt"></i> 員工專區登入</h4>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="employee-id" class="form-label">員工工號</label>
+                                            <input type="text" class="form-control" id="employee-id" placeholder="請輸入工號">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">密碼</label>
+                                            <input type="password" class="form-control" id="password" placeholder="請輸入密碼">
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button type="button" class="btn btn-primary" onclick="login('admin')">以管理員身份登入 (Demo)</button>
+                                            <button type="button" class="btn btn-outline-primary" onclick="login('user')">以一般員工身份登入 (Demo)</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 側邊欄 (僅登入後顯示) -->
+            <div id="sidebar" class="col-md-2 sidebar" style="display: none;">
+                <div class="nav flex-column nav-pills p-3">
+                    <!-- 管理員選單 -->
+                    <div id="admin-menu" style="display: none;">
+                        <h6 class="text-muted">管理功能</h6>
+                        <a class="nav-link" href="#" onclick="showPage('user-management')">
+                            <i class="fas fa-users"></i> 用戶管理
+                        </a>
+                        <a class="nav-link" href="#" onclick="showPage('announcement-management')">
+                            <i class="fas fa-bullhorn"></i> 公告管理
+                        </a>
+                        <hr>
+                    </div>
+                    
+                    <!-- 共用選單 -->
+                    <h6 class="text-muted">一般功能</h6>
+                    <a class="nav-link active" href="#" onclick="showPage('announcement-list')">
+                        <i class="fas fa-list"></i> 公告瀏覽
+                    </a>
+                </div>
+            </div>
+
+            <!-- 主要內容區 -->
+            <div id="main-content" class="col-md-10" style="display: none;">
+                
+                <!-- 公告瀏覽頁面 -->
+                <div id="announcement-list-page" class="page-section active">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-bullhorn"></i> 公司公告</h2>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card mb-3 announcement-item">
+                                    <div class="card-body">
+                                        <h5 class="card-title">【重要】2025年度員工體檢通知</h5>
+                                        <p class="announcement-meta">
+                                            <i class="fas fa-calendar"></i> 2025-08-10 | 
+                                            <i class="fas fa-user"></i> 人資部
+                                        </p>
+                                        <p class="card-text">各位同仁，2025年度員工健康檢查即將開始，請注意以下重要事項...</p>
+                                        <a href="#" class="btn btn-outline-primary btn-sm" onclick="showAnnouncementDetail(1)">閱讀更多</a>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-3 announcement-item">
+                                    <div class="card-body">
+                                        <h5 class="card-title">中秋節連續假期公告</h5>
+                                        <p class="announcement-meta">
+                                            <i class="fas fa-calendar"></i> 2025-08-08 | 
+                                            <i class="fas fa-user"></i> 總務部
+                                        </p>
+                                        <p class="card-text">依據政府公告，中秋節連續假期為9月15日至9月17日...</p>
+                                        <a href="#" class="btn btn-outline-primary btn-sm" onclick="showAnnouncementDetail(2)">閱讀更多</a>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-3 announcement-item">
+                                    <div class="card-body">
+                                        <h5 class="card-title">新版員工手冊發佈</h5>
+                                        <p class="announcement-meta">
+                                            <i class="fas fa-calendar"></i> 2025-08-05 | 
+                                            <i class="fas fa-user"></i> 人資部
+                                        </p>
+                                        <p class="card-text">2025年版員工手冊已完成修訂，請各位同仁下載最新版本...</p>
+                                        <a href="#" class="btn btn-outline-primary btn-sm" onclick="showAnnouncementDetail(3)">閱讀更多</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 公告詳細頁面 -->
+                <div id="announcement-detail-page" class="page-section">
+                    <div class="p-4">
+                        <div class="mb-3">
+                            <button class="btn btn-outline-secondary" onclick="showPage('announcement-list')">
+                                <i class="fas fa-arrow-left"></i> 返回列表
+                            </button>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 id="detail-title">【重要】2025年度員工體檢通知</h3>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i> 發布時間：2025-08-10 |
+                                    <i class="fas fa-user"></i> 發布者：人資部
+                                </small>
+                            </div>
+                            <div class="card-body">
+                                <div id="detail-content">
+                                    <p>各位同仁大家好，</p>
+                                    <p>2025年度員工健康檢查即將開始，相關安排如下：</p>
+                                    <h5>檢查時間</h5>
+                                    <ul>
+                                        <li>第一批：8月20日-8月24日</li>
+                                        <li>第二批：8月27日-8月31日</li>
+                                    </ul>
+                                    <h5>注意事項</h5>
+                                    <ol>
+                                        <li>請提前預約檢查時間</li>
+                                        <li>檢查前需空腹8小時</li>
+                                        <li>攜帶身分證及員工識別證</li>
+                                    </ol>
+                                    <p>如有任何問題，請聯繫人資部。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用戶管理頁面 (僅管理員) -->
+                <div id="user-management-page" class="page-section">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-users"></i> 用戶管理</h2>
+                            <button class="btn btn-primary" onclick="showUserModal()">
+                                <i class="fas fa-plus"></i> 新增用戶
+                            </button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>工號</th>
+                                                <th>姓名</th>
+                                                <th>角色</th>
+                                                <th>建立時間</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>A001</td>
+                                                <td>系統管理員</td>
+                                                <td><span class="badge bg-danger">Admin</span></td>
+                                                <td>2025-08-01</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>E001</td>
+                                                <td>張小明</td>
+                                                <td><span class="badge bg-info">User</span></td>
+                                                <td>2025-08-01</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>E002</td>
+                                                <td>李小華</td>
+                                                <td><span class="badge bg-info">User</span></td>
+                                                <td>2025-08-02</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 公告管理頁面 (僅管理員) -->
+                <div id="announcement-management-page" class="page-section">
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-bullhorn"></i> 公告管理</h2>
+                            <button class="btn btn-primary" onclick="showAnnouncementModal()">
+                                <i class="fas fa-plus"></i> 新增公告
+                            </button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>標題</th>
+                                                <th>發布者</th>
+                                                <th>發布時間</th>
+                                                <th>狀態</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>【重要】2025年度員工體檢通知</td>
+                                                <td>人資部</td>
+                                                <td>2025-08-10</td>
+                                                <td><span class="badge bg-success">已發布</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>中秋節連續假期公告</td>
+                                                <td>總務部</td>
+                                                <td>2025-08-08</td>
+                                                <td><span class="badge bg-success">已發布</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>新版員工手冊發佈</td>
+                                                <td>人資部</td>
+                                                <td>2025-08-05</td>
+                                                <td><span class="badge bg-warning">草稿</span></td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary btn-sm me-1">編輯</button>
+                                                    <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增用戶 Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增用戶</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="new-employee-id" class="form-label">員工工號</label>
+                            <input type="text" class="form-control" id="new-employee-id" placeholder="例：E003">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-name" class="form-label">姓名</label>
+                            <input type="text" class="form-control" id="new-name" placeholder="請輸入姓名">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-password" class="form-label">預設密碼</label>
+                            <input type="password" class="form-control" id="new-password" placeholder="例：生日4碼">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-role" class="form-label">角色</label>
+                            <select class="form-control" id="new-role">
+                                <option value="user">User - 一般員工</option>
+                                <option value="admin">Admin - 管理員</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">新增用戶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增公告 Modal -->
+    <div class="modal fade" id="announcementModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增公告</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="announcement-title" class="form-label">公告標題</label>
+                            <input type="text" class="form-control" id="announcement-title" placeholder="請輸入公告標題">
+                        </div>
+                        <div class="mb-3">
+                            <label for="announcement-content" class="form-label">公告內容</label>
+                            <div style="border: 1px solid #ced4da; min-height: 300px; padding: 10px; background-color: #f8f9fa;">
+                                <p><em>這裡會是 CKEditor 4 富文本編輯器</em></p>
+                                <p>支援功能：</p>
+                                <ul>
+                                    <li><strong>粗體</strong>、<em>斜體</em>格式</li>
+                                    <li>項目列表</li>
+                                    <li>插入圖片</li>
+                                    <li>超連結</li>
+                                    <li>表格編輯</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="announcement-status" class="form-label">發布狀態</label>
+                            <select class="form-control" id="announcement-status">
+                                <option value="draft">草稿</option>
+                                <option value="published">立即發布</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">儲存公告</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+        let currentRole = null;
+
+        function login(role) {
+            currentUser = role === 'admin' ? '系統管理員 (A001)' : '張小明 (E001)';
+            currentRole = role;
+            
+            // 顯示用戶資訊
+            document.getElementById('current-user').textContent = currentUser;
+            document.getElementById('user-info').style.display = 'inline';
+            document.getElementById('logout-btn').style.display = 'inline';
+            
+            // 隱藏登入頁面，顯示主要內容
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('main-content').style.display = 'block';
+            
+            // 根據角色顯示選單
+            if (role === 'admin') {
+                document.getElementById('admin-menu').style.display = 'block';
+            } else {
+                document.getElementById('admin-menu').style.display = 'none';
+            }
+            
+            showPage('announcement-list');
+        }
+
+        function logout() {
+            currentUser = null;
+            currentRole = null;
+            
+            document.getElementById('user-info').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'none';
+            document.getElementById('login-page').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('main-content').style.display = 'none';
+        }
+
+        function showPage(pageName) {
+            // 隱藏所有頁面
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // 移除所有導航的 active 狀態
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // 顯示指定頁面
+            if (pageName === 'announcement-list') {
+                document.getElementById('announcement-list-page').classList.add('active');
+                document.querySelector('a[onclick="showPage(\'announcement-list\')"]').classList.add('active');
+            } else if (pageName === 'user-management' && currentRole === 'admin') {
+                document.getElementById('user-management-page').classList.add('active');
+                document.querySelector('a[onclick="showPage(\'user-management\')"]').classList.add('active');
+            } else if (pageName === 'announcement-management' && currentRole === 'admin') {
+                document.getElementById('announcement-management-page').classList.add('active');
+                document.querySelector('a[onclick="showPage(\'announcement-management\')"]').classList.add('active');
+            } else if (pageName === 'login') {
+                logout();
+            }
+        }
+
+        function showAnnouncementDetail(id) {
+            document.getElementById('announcement-list-page').classList.remove('active');
+            document.getElementById('announcement-detail-page').classList.add('active');
+        }
+
+        function showUserModal() {
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            modal.show();
+        }
+
+        function showAnnouncementModal() {
+            const modal = new bootstrap.Modal(document.getElementById('announcementModal'));
+            modal.show();
+        }
+    </script>
+
+</body>
+</html>
